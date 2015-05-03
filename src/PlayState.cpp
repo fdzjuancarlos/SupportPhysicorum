@@ -1,5 +1,6 @@
 #include "PlayState.h"
 #include "PauseState.h"
+#include "IntroState.h"
 #include "Shapes/OgreBulletCollisionsTrimeshShape.h"	
 #include "Shapes/OgreBulletCollisionsSphereShape.h"	
 #include "Utils/OgreBulletCollisionsMeshToShapeConverter.h"
@@ -219,7 +220,7 @@ PlayState::enter ()
 	_player->attachObject(ent1);
 	_sceneMgr->getRootSceneNode()->addChild(_player.get());
 	_player->setScale(1,1,1);
-	_player->setPosition(0,-69,-40);
+	_player->setPosition(-10,-47,-40);
 
   //DEBUG ONLY Coordinator Situate
 	Ogre::Entity* ent2 = _sceneMgr->createEntity("DEBUG SEE", "RobotilloMesh.mesh");
@@ -240,7 +241,7 @@ PlayState::enter ()
 
   rigidBoxPlayer->setShape(_player.get(), boxShape,
 		     0.6 /* Restitucion */, 0.6 /* Friccion */,
-		     5.0 /* Masa */, Vector3(0,-40,0)/* Posicion inicial */,
+		     5.0 /* Masa */, Vector3(-10,-47,34)/* Posicion inicial */,
 		     Quaternion(0,0,-180,1) /* Orientacion */);
  rigidBoxPlayer->getBulletRigidBody()->setLinearFactor(btVector3(1,1,1));
  rigidBoxPlayer->getBulletRigidBody()->setAngularFactor(btVector3(0,1,0));
@@ -297,6 +298,7 @@ PlayState::frameStarted
   if(4 > _player->getPosition().distance(Vector3(-95,-28,31))){
     _win = true;
     std::cout << "Win Condition!" << std::endl;
+		pushState(IntroState::getSingletonPtr());
   }
   //Bouncer Logic
   if(5 > _player->getPosition().distance(Vector3(-47,-32,71))){
@@ -430,6 +432,7 @@ PlayState::frameStarted
         rigidBoxPlayer->getBulletRigidBody()->
         applyCentralForce(btVector3(normalisedDelta.x,normalisedDelta.y,normalisedDelta.z)
             *2000*_newtons);
+                        (_pSoundFXManager->load("sqau.wav"))->play();
       }
       _newtons = 0;
   }
