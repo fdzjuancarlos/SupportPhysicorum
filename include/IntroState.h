@@ -55,8 +55,10 @@ class IntroState : public Ogre::Singleton<IntroState>, public GameState
   //Funciones propias
   void createGUI();
   void initMenu();
+  void controlMenu();
   void creditMenu();
   bool initGame(const CEGUI::EventArgs &e);
+  bool controls(const CEGUI::EventArgs &e);
   bool credits(const CEGUI::EventArgs &e);
   bool back(const CEGUI::EventArgs &e);
   bool quit(const CEGUI::EventArgs &e);
