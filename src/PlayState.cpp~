@@ -432,6 +432,7 @@ PlayState::frameStarted
         rigidBoxPlayer->getBulletRigidBody()->
         applyCentralForce(btVector3(normalisedDelta.x,normalisedDelta.y,normalisedDelta.z)
             *2000*_newtons);
+                        (_pSoundFXManager->load("sqau.wav"))->play();
       }
       _newtons = 0;
   }

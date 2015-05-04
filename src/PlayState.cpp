@@ -91,6 +91,8 @@ PlayState::enter ()
 
 	// Se recupera el gestor de escena y la cámara.
 	_sceneMgr = _root->getSceneManager("SceneManager");
+	_sceneMgr -> setAmbientLight(Ogre::ColourValue(0.6, 0.6, 0.6));
+  	_sceneMgr -> setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 	_camera = _sceneMgr->getCamera("IntroCamera");
 	_viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
 	
