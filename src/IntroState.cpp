@@ -1,13 +1,14 @@
 #include "IntroState.h"
 #include "PlayState.h"
 
+
 template<> IntroState* Ogre::Singleton<IntroState>::msSingleton = 0;
 
 void
 IntroState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-  _sceneMgr = _root->createSceneManager(Ogre::ST_GENERIC, "SceneManager");
+  _sceneMgr = _root->createSceneManager(Ogre::ST_INTERIOR, "SceneManager");
   _sceneMgr -> setAmbientLight(Ogre::ColourValue(0.6, 0.6, 0.6));
   _sceneMgr -> setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_ADDITIVE);
 
@@ -17,8 +18,6 @@ IntroState::enter ()
   _camera -> setPosition(80,20,-200);
   _camera -> yaw(Ogre::Degree(-122));
   _camera -> pitch(Ogre::Degree(12));
-
-
 
   //Camaras para pruebas
 //	_camera -> setPosition(60,1000,-270);
@@ -31,10 +30,8 @@ IntroState::enter ()
   _viewport->setBackgroundColour(Ogre::ColourValue(0, 0, 0));
   
   Ogre::Entity* ent2 = _sceneMgr->createEntity("bottom", "Level1Mesh.mesh");
-//  Entity *entity = _sceneMgr->createEntity("Level1Mesh.mesh");
-//  ent2->setMaterialName("bottom");
   ent2->setCastShadows(true);
-    Ogre::SceneNode* bottom = _sceneMgr->createSceneNode("bottom");
+  Ogre::SceneNode* bottom = _sceneMgr->createSceneNode("bottom");
   bottom->attachObject(ent2);
   _sceneMgr->getRootSceneNode()->addChild(bottom);
   bottom->setScale(10,10,10);
@@ -51,15 +48,36 @@ IntroState::enter ()
   player->setPosition(170,9,-110);
   player->yaw(Ogre::Degree(36));
 
+//Robot Initialization
+//  Ogre::Entity* ent1 = _sceneMgr->createEntity("Robotillo", "RebotadorMesh.mesh");
+//  ent1->setCastShadows(true);
+//  std::shared_ptr<SceneNode> player(_sceneMgr->createSceneNode("Player"));
+//  Ogre::SceneNode* player = _sceneMgr->createSceneNode("Player");
+//  player->attachObject(ent1);
+//  _sceneMgr->getRootSceneNode()->addChild(player);
+//  player->setScale(10,10,10);
+//  player->setPosition(170,9,-110);
+//  player->yaw(Ogre::Degree(36));
+
 
   //Inicializamos las luces
-  Ogre::Light* light = _sceneMgr->createLight("Light1");
-  light->setType(Ogre::Light::LT_SPOTLIGHT);
-  light->setPosition(170,120,500);
+  Ogre::Light* light1 = _sceneMgr->createLight("Light1");
+  light1->setType(Ogre::Light::LT_SPOTLIGHT);
+  light1->setPosition(170,120,500);
+  light1->setPowerScale(60);
+  light1->setDirection(Ogre::Vector3(0,0,-1));
+  
+  Ogre::Light* light2 = _sceneMgr->createLight("Light2");
+  light2->setType(Ogre::Light::LT_SPOTLIGHT);
+//  light2->setType(Ogre::Light::LT_POINT);
+//  light2->setType(Ogre::Light::LT_DIRECTIONAL);
+  light2->setPosition(Vector3(-200,100,100));
+  light2->setPowerScale(5);
+  light2->setDirection(Ogre::Vector3(1,0,-1));
+
+
 //  light -> setDiffuseColour (1, 1, 1);
 //  light -> setSpecularColour (1, 1, 1);
-  light -> setPowerScale(60);
-  light->setDirection(Ogre::Vector3(0,0,-1));
 //  light->setSpotlightInnerAngle(Ogre::Degree(1.0f));
 //  light->setSpotlightOuterAngle(Ogre::Degree(1.0f));
 //  light->setSpotlightFalloff(10.0f);
@@ -71,6 +89,7 @@ IntroState::enter ()
 
   //Inicializamos animaciones
   _animState = _sceneMgr->getEntity("Robotillo")->getAnimationState("Standing");
+// _animState = _sceneMgr->getEntity("Robotillo")->getAnimationState("Boing");
   _animState->setEnabled(false);
 
   //Inicializamos menu
@@ -78,6 +97,7 @@ IntroState::enter ()
   createGUI();
   initMenu();
 
+  _initGameControl = true;
   _exitGame = false;
 }
 
@@ -138,14 +158,14 @@ IntroState::keyPressed
   // Transición al siguiente estado.
   // Espacio --> PlayState
   if (e.key == OIS::KC_SPACE) {
-//	if (_initGameControl == true){
-//		CEGUI::MouseCursor::getSingleton().hide( );
+	if (_initGameControl == true){
+		CEGUI::MouseCursor::getSingleton().hide( );
 		//CEGUI::WindowManager::getSingletonPtr()->destroyAllWindows();
-//		CEGUI::WindowManager::getSingletonPtr()->destroyWindow("MenuWin");
+		CEGUI::WindowManager::getSingletonPtr()->destroyWindow("MenuWin");
 		//PlayState::getSingletonPtr()->newGame(true);
 		changeState(PlayState::getSingletonPtr());
 	}
-//  }
+  }
 }
 
 void
@@ -231,19 +251,19 @@ void IntroState::initMenu(){
 	CEGUI::Window* sheet = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow","MenuWin");
 
 	//Config Window
-	CEGUI::Window* formatWin = CEGUI::WindowManager::getSingleton().loadWindowLayout("MenuInit.layout");
+	CEGUI::Window* formatWin = CEGUI::WindowManager::getSingleton().loadWindowLayout("Init.layout");
 
 	//Game Window
-	//CEGUI::Window* gameButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/GameButton");
-	//gameButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::initGame, this));
+	CEGUI::Window* gameButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/GameButton");
+	gameButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::initGame, this));
 
-	//Load Window
-	//CEGUI::Window* loadButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/LoadButton");
-	//loadButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::load, this));
+	//Controls Window
+	//CEGUI::Window* controlButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/LoadButton");
+	//controlButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::controls, this));
 
-	//Option Window
-	//CEGUI::Window* optionButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/OptionButton");
-	//optionButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::option, this));
+	//Designers Window
+	CEGUI::Window* designersButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/OptionButton");
+	designersButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::credits, this));
 
 	//Exit Window
 	CEGUI::Window* exitButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/ExitButton");
@@ -254,7 +274,55 @@ void IntroState::initMenu(){
 	CEGUI::System::getSingleton().setGUISheet(sheet);
 }
 
+void IntroState::creditMenu(){
+	//Sheet
+	CEGUI::Window* sheet = CEGUI::WindowManager::getSingleton().createWindow("DefaultWindow","CreditWin");
+
+	//Config Window
+	CEGUI::Window* formatWin = CEGUI::WindowManager::getSingleton().loadWindowLayout("Credits.layout");
+
+	//Setting Text!
+	CEGUI::WindowManager::getSingleton().getWindow("FormatWin/Text1")->setText("[vert-alignment='centre'] Diseñado por:");
+	CEGUI::WindowManager::getSingleton().getWindow("FormatWin/Text2")->setText("[vert-alignment='centre']   - Juan Carlos");
+	CEGUI::WindowManager::getSingleton().getWindow("FormatWin/Text3")->setText("[vert-alignment='centre']       Fernandez Duran");
+	CEGUI::WindowManager::getSingleton().getWindow("FormatWin/Text4")->setText("[vert-alignment='centre']   - Ivan Martinez Heras");
+
+	//Back Window
+	CEGUI::Window* backButton = CEGUI::WindowManager::getSingleton().getWindow("FormatWin/BackButton");
+	backButton->subscribeEvent(CEGUI::PushButton::EventClicked, CEGUI::Event::Subscriber(&IntroState::back, this));
+	
+	//Attaching buttons
+	sheet->addChildWindow(formatWin);
+	CEGUI::System::getSingleton().setGUISheet(sheet);
+}
+
+bool IntroState::initGame(const CEGUI::EventArgs &e){
+	CEGUI::MouseCursor::getSingleton().hide( );
+	//CEGUI::WindowManager::getSingletonPtr()->destroyAllWindows();
+	CEGUI::WindowManager::getSingletonPtr()->destroyAllWindows();
+//	PlayState::getSingletonPtr()->newGame(true);
+	changeState(PlayState::getSingletonPtr());
+
+	return true;
+}
+
+bool IntroState::credits(const CEGUI::EventArgs &e){
+	_initGameControl=false;
+	CEGUI::WindowManager::getSingletonPtr()->destroyWindow("MenuWin");
+	creditMenu();
+	return true;
+}
+
+bool IntroState::back(const CEGUI::EventArgs &e){
+	CEGUI::WindowManager::getSingletonPtr()->destroyAllWindows();
+	_initGameControl=true;
+	initMenu();
+
+	return true;
+}
+
 bool IntroState::quit(const CEGUI::EventArgs &e){
+	CEGUI::WindowManager::getSingletonPtr()->destroyAllWindows();
 	_exitGame = true;
 	return true;
 }

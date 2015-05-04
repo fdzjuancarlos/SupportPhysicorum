@@ -55,6 +55,10 @@ class IntroState : public Ogre::Singleton<IntroState>, public GameState
   //Funciones propias
   void createGUI();
   void initMenu();
+  void creditMenu();
+  bool initGame(const CEGUI::EventArgs &e);
+  bool credits(const CEGUI::EventArgs &e);
+  bool back(const CEGUI::EventArgs &e);
   bool quit(const CEGUI::EventArgs &e);
 
   
@@ -69,9 +73,9 @@ class IntroState : public Ogre::Singleton<IntroState>, public GameState
 
 //  std::shared_ptr<SceneNode> _player;
 
-  CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID id); 
-
-  bool _ball;
+  CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID id);
+ 
+  bool _initGameControl;
   bool _exitGame;
   float _timeSinceLastFrame;
 };
